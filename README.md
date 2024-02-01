@@ -32,3 +32,7 @@ The repository is organized into two main directories: `include` and `src`. The 
   - Found in `include/trie` and `src/trie`.
   - Provides an implementation of the trie data structure, excellent for efficient storage and retrieval of strings, particularly useful in autocomplete systems and IP routing.
 
+- **Binary Tree (`binary_tree`):**
+  - Located in `include/binary_tree` and `src/binary_tree`.
+  - Implements a binary tree data structure, fundamental for various algorithmic tasks and data organization. This structure provides efficient operations for searching, insertion, and traversal, making it suitable for applications such as sorting and representing hierarchical data.
+
