@@ -68,6 +68,35 @@ static void basic_test(void)
 		rv = -7; goto tree_destroy;
 	}
 	
+	/****************************************************************
+	 * Preorder print.
+	 ***************************************************************/
+	printf("Preorder:\n");
+	binary_tree_pre_order_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Inorder print.
+	 ***************************************************************/
+	printf("Inorder:\n");
+	binary_tree_in_order_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Postorder print.
+	 ***************************************************************/
+	printf("Postorder:\n");
+	binary_tree_post_order_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Levelorder print.
+	 ***************************************************************/
+	printf("Levelorder:\n");
+	binary_tree_level_order_print(root);
+	printf("\n");
+
+
 tree_destroy:
 	binary_tree_node_destroy(root);
 
