@@ -9,36 +9,10 @@
 #include "binary_tree/binary_tree.h"
 
 /*****************************************************************************/
-//
-// Basic test binary tree creation, and traversal using integers.
-//
-
-static void *basic_test_alloc_cb(void *data)
-{
-	void *p;
-
-	p = malloc(sizeof(int));
-	if (!p)
-		return NULL;
-
-	memcpy(p, data, sizeof(int));
-
-	return p;
-}
-
-static void basic_test_free_cb(void *data)
-{
-	free(data);
-}
-
-static void basic_test_print_cb(void *data)
-{
-	printf("%d ", *((int *)data));
-}
 
 static void basic_test(void)
 {
-	int rv, val;
+	int rv = 0;
 	binary_tree_node *root = NULL;
 
 	/*
@@ -53,57 +27,52 @@ static void basic_test(void)
 	 * Create binary tree.
 	 ***************************************************************/
 	//
-	val = 1;
-	root = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root = binary_tree_node_create(1);
 	if (!root) {
-		rv = -1; goto error;
+		rv = -1; goto tree_destroy;
 	}
 
 	//
-	val = 2;
-	root->left = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root->left = binary_tree_node_create(2);
 	if (!root->left) {
-		rv = -2; goto error;
+		rv = -2; goto tree_destroy;
 	}
 
 	//
-	val = 3;
-	root->right = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root->right = binary_tree_node_create(3);
 	if (!root->right) {
-		rv = -3; goto error;
+		rv = -3; goto tree_destroy;
 	}
 
 	//
-	val = 4;
-	root->left->left = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root->left->left = binary_tree_node_create(4);
 	if (!root->left->left) {
-		rv = -4; goto error;
+		rv = -4; goto tree_destroy;
 	}
 
 	//
-	val = 5;
-	root->left->right = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root->left->right = binary_tree_node_create(5);
 	if (!root->left->right) {
-		rv = -5; goto error;
+		rv = -5; goto tree_destroy;
 	}
 
 	//
-	val = 6;
-	root->right->left = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root->right->left = binary_tree_node_create(6);
 	if (!root->right->left) {
-		rv = -6; goto error;
+		rv = -6; goto tree_destroy;
 	}
 
 	//
-	val = 7;
-	root->right->right = binary_tree_node_create(&val, basic_test_alloc_cb);
+	root->right->right = binary_tree_node_create(7);
 	if (!root->right->right) {
-		rv = -7; goto error;
+		rv = -7; goto tree_destroy;
 	}
 	
-error:
-	binary_tree_node_destroy(root, basic_test_free_cb);
-	printf("[%s] Error: %d\n", __func__, rv);
+tree_destroy:
+	binary_tree_node_destroy(root);
+
+	if (rv)
+		printf("[%s] Error: %d\n", __func__, rv);
 }
 
 
