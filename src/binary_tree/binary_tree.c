@@ -90,8 +90,8 @@ void binary_tree_pre_order_print(binary_tree_node *node)
 		return;
 
 	printf("%d ", node->data);
-	binary_tree_in_order_print(node->left);
-	binary_tree_in_order_print(node->right);
+	binary_tree_pre_order_print(node->left);
+	binary_tree_pre_order_print(node->right);
 }
 
 
@@ -105,8 +105,8 @@ void binary_tree_post_order_print(binary_tree_node *node)
 	if (!node)
 		return;
 
-	binary_tree_in_order_print(node->left);
-	binary_tree_in_order_print(node->right);
+	binary_tree_post_order_print(node->left);
+	binary_tree_post_order_print(node->right);
 	printf("%d ", node->data);
 }
 
@@ -131,7 +131,7 @@ void binary_tree_level_order_print(binary_tree_node *node)
 		return;
 
 	//
-	assert(queue_enqueue(queue, node));
+	assert(!queue_enqueue(queue, node));
 
 	while (!queue_is_empty(queue)) {
 		// get first in queue
@@ -139,14 +139,14 @@ void binary_tree_level_order_print(binary_tree_node *node)
 		assert(crt);
 
 		// print element in queue
-		printf("%d ", node->data);
+		printf("%d ", crt->data);
 
 		// add element leaves in queue
 		if (crt->left)
-			assert(queue_enqueue(queue, crt->left));
+			assert(!queue_enqueue(queue, crt->left));
 
 		if (crt->right)
-			assert(queue_enqueue(queue, crt->right));
+			assert(!queue_enqueue(queue, crt->right));
 	}
 
 	// destroy queue
