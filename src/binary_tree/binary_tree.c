@@ -29,7 +29,7 @@ binary_tree_node *binary_tree_node_create(int data)
 		return NULL;
 
 	// create node
-	node = (binary_tree_node *)malloc(sizeof(binary_tree_node_create));
+	node = (binary_tree_node *)malloc(sizeof(binary_tree_node));
 	if (!node)
 		return NULL;
 
