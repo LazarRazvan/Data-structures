@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "binary_tree/binary_tree.h"
+#include "tree/binary_tree.h"
 
 /*****************************************************************************/
 
@@ -15,16 +15,14 @@ static void basic_test(void)
 	int rv = 0;
 	binary_tree_node *root = NULL;
 
-	/*
+
+	/****************************************************************
+	 * Create binary tree.
             1
         /      \
        2        3
       /  \     / \
      4   5    6  7
-	*/
-
-	/****************************************************************
-	 * Create binary tree.
 	 ***************************************************************/
 	//
 	root = binary_tree_node_create(1);

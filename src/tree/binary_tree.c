@@ -8,7 +8,7 @@
 #include <assert.h>
 
 #include "queue/queue.h"
-#include "binary_tree/binary_tree.h"
+#include "tree/binary_tree.h"
 
 
 /*****************************************************************************/

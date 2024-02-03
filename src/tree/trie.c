@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stddef.h>
 
-#include "trie/trie.h"
+#include "tree/trie.h"
 
 
 /********************************** HELPERS **********************************/
