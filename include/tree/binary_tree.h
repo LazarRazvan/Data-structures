@@ -27,10 +27,21 @@ typedef struct binary_tree_node_s {
 binary_tree_node *binary_tree_node_create(int data);
 void binary_tree_node_destroy(binary_tree_node *node);
 
+
+/*****************************************************************************/
+
 //
 void binary_tree_in_order_print(binary_tree_node *root);
 void binary_tree_pre_order_print(binary_tree_node *root);
 void binary_tree_post_order_print(binary_tree_node *root);
 void binary_tree_level_order_print(binary_tree_node *node);
+
+
+/*****************************************************************************/
+
+//
+int binary_tree_depth_recursive(binary_tree_node *node);
+int binary_tree_depth_iterative(binary_tree_node *node);
+
 
 #endif	// BINARY_TREE_H

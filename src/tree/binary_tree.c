@@ -10,6 +10,10 @@
 #include "queue/queue.h"
 #include "tree/binary_tree.h"
 
+/*****************************************************************************/
+
+
+#define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
 
 /*****************************************************************************/
 
@@ -152,3 +156,81 @@ void binary_tree_level_order_print(binary_tree_node *node)
 	// destroy queue
 	queue_destroy(queue);
 }
+
+
+/*****************************************************************************/
+
+/**
+ * Get depth of a binary tree using recursive method.
+ *
+ * @node: Binary tree root.
+ *
+ * Depth represent the number of edges from root to the deepest leaf node.
+ * The depth of an empty tree is 0 and the depth of a tree with a single node
+ * is 1.
+ */
+int binary_tree_depth_recursive(binary_tree_node *node)
+{
+	if (!node)
+		return 0;
+
+	return MAX(binary_tree_depth_recursive(node->left),
+				binary_tree_depth_recursive(node->right)) + 1;
+}
+
+
+/**
+ * Get depth of a binary tree using iterative method (level order)
+ *
+ * @node: Binary tree root.
+ *
+ * Depth represent the number of edges from root to the deepest leaf node.
+ * The depth of an empty tree is 0 and the depth of a tree with a single node
+ * is 1.
+ */
+int binary_tree_depth_iterative(binary_tree_node *node)
+{
+	int depth = 0;
+	unsigned int size;
+	binary_tree_node *crt;
+	queue_t *queue = NULL;
+
+	//
+	if (!node)
+		goto success;
+
+	// create queue
+	queue = queue_create(128);
+	assert(queue);
+
+	// add root to queue
+	assert(!queue_enqueue(queue, node));
+
+	while (!queue_is_empty(queue)) {
+		// increase depth
+		depth++;
+
+		// loop to dequeue all nodes on the same level
+		size = queue_size(queue);
+		for (int i = 0; i < size; i++) {
+			crt = (binary_tree_node *)queue_dequeue(queue);
+			assert(crt);
+
+			// add children in queue
+			if (crt->left)
+				assert(!queue_enqueue(queue, crt->left));
+
+			if (crt->right)
+				assert(!queue_enqueue(queue, crt->right));
+		}
+	}
+
+
+	// destroy queue
+	queue_destroy(queue);
+
+success:
+
+	return depth;
+}
+

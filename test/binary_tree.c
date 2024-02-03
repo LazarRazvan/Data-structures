@@ -15,6 +15,16 @@ static void basic_test(void)
 	int rv = 0;
 	binary_tree_node *root = NULL;
 
+	/****************************************************************
+	 * Recursive depth.
+	 ***************************************************************/
+	printf("Recursive depth empty: %d\n", binary_tree_depth_recursive(root));
+
+	/****************************************************************
+	 * Iterative depth.
+	 ***************************************************************/
+	printf("Iterative depth empty: %d\n", binary_tree_depth_iterative(root));
+
 
 	/****************************************************************
 	 * Create binary tree.
@@ -23,6 +33,10 @@ static void basic_test(void)
        2        3
       /  \     / \
      4   5    6  7
+	 			 \
+				  8
+				  \
+				   9
 	 ***************************************************************/
 	//
 	root = binary_tree_node_create(1);
@@ -65,7 +79,19 @@ static void basic_test(void)
 	if (!root->right->right) {
 		rv = -7; goto tree_destroy;
 	}
-	
+
+	//
+	root->right->right->right = binary_tree_node_create(8);
+	if (!root->right->right->right) {
+		rv = -8; goto tree_destroy;
+	}
+
+	//
+	root->right->right->right->right = binary_tree_node_create(9);
+	if (!root->right->right->right->right) {
+		rv = -9; goto tree_destroy;
+	}
+
 	/****************************************************************
 	 * Preorder print.
 	 ***************************************************************/
@@ -93,6 +119,16 @@ static void basic_test(void)
 	printf("Levelorder:\n");
 	binary_tree_level_order_print(root);
 	printf("\n");
+
+	/****************************************************************
+	 * Recursive depth.
+	 ***************************************************************/
+	printf("Recursive depth: %d\n", binary_tree_depth_recursive(root));
+
+	/****************************************************************
+	 * Iterative depth.
+	 ***************************************************************/
+	printf("Iterative depth: %d\n", binary_tree_depth_iterative(root));
 
 
 tree_destroy:
