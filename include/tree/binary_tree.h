@@ -31,6 +31,13 @@ void binary_tree_node_destroy(binary_tree_node *node);
 /*****************************************************************************/
 
 //
+binary_tree_node *binary_tree_insert(binary_tree_node *root, int data);
+binary_tree_node *binary_tree_delete(binary_tree_node *root, int data);
+
+
+/*****************************************************************************/
+
+//
 void binary_tree_in_order_print(binary_tree_node *root);
 void binary_tree_pre_order_print(binary_tree_node *root);
 void binary_tree_post_order_print(binary_tree_node *root);

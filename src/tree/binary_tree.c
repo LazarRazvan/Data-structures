@@ -28,10 +28,6 @@ binary_tree_node *binary_tree_node_create(int data)
 {
 	binary_tree_node *node = NULL;
 
-	// validate data
-	if (!data)
-		return NULL;
-
 	// create node
 	node = (binary_tree_node *)malloc(sizeof(binary_tree_node));
 	if (!node)
@@ -62,6 +58,170 @@ void binary_tree_node_destroy(binary_tree_node *node)
 
 	// destroy node
 	free(node);
+}
+
+
+/*****************************************************************************/
+
+/**
+ * Insert a node in a binary tree using level order. Iterate tree nodes using
+ * level order traversal. When a node left child is empty, insert the new node.
+ * Otherwise, when a node right child is empty, insert the new node.
+ *
+ * @root: Binary tree root.
+ * @data: Data to be stored by new node.
+ *
+ * Return new created node on success and NULL otherwise.
+ */
+binary_tree_node *binary_tree_insert(binary_tree_node *root, int data)
+{
+	queue_t *queue = NULL;
+	binary_tree_node *crt = NULL;
+	binary_tree_node *node = NULL;
+
+	// if empty, create tree root
+	if (!root) {
+		node = binary_tree_node_create(data);
+		goto finish;
+	}
+
+	// level order traversal to find the slot for the new node
+	queue = queue_create(128);
+	assert(queue);
+
+	//
+	assert(!queue_enqueue(queue, root));
+
+	while (!queue_is_empty(queue)) {
+		// get first in queue
+		crt = (binary_tree_node *)queue_dequeue(queue);
+		assert(crt);
+
+		// left child
+		if (!crt->left) {
+			node = binary_tree_node_create(data);
+			if (!node)
+				goto free_queue;
+
+			//
+			crt->left = node;
+			break;
+		} else {
+			assert(!queue_enqueue(queue, crt->left));
+		}
+
+		// right child
+		if (!crt->right) {
+			node = binary_tree_node_create(data);
+			if (!node)
+				goto free_queue;
+
+			//
+			crt->right = node;
+			break;
+		} else {
+			assert(!queue_enqueue(queue, crt->right));
+		}
+	}
+
+free_queue:
+	queue_destroy(queue);
+
+finish:
+	return node;
+}
+
+
+/**
+ * Delete a node from a binary tree. The node deletion in a binary tree is
+ * performed by replacing the node to be deleted with the bottom most and
+ * right most node to make sure the tree is kept balanced.
+ *
+ * @root: Binary tree root.
+ * @data: Node with data to be deleted.
+ *
+ * Return binary tree root on success and NULL otherwise.
+ *
+ * Note: If multiple nodes with same data reside in the tree, the last node
+ * in level order traversal will be removed.
+ */
+binary_tree_node *binary_tree_delete(binary_tree_node *root, int data)
+{
+	queue_t *queue = NULL;
+	binary_tree_node *to_delete = NULL;		// node to be deleted
+	binary_tree_node *to_replace = NULL;	// bottom and right most node
+	binary_tree_node *parent_to_replace = NULL;	// parent of node to replace
+
+	// error for empty root
+	if (!root)
+		return NULL;
+
+	//
+	queue = queue_create(128);
+	assert(queue);
+
+	//
+	assert(!queue_enqueue(queue, root));
+
+	// use "to_replace" because at the end of the loop will store the
+	// bottom most and right most node (to repalce the deleted node)
+	while (!queue_is_empty(queue)) {
+
+		// get first in queue
+		to_replace = (binary_tree_node *)queue_dequeue(queue);
+		assert(to_replace);
+
+		// lookup for node to be deleted
+		if (to_replace->data == data)
+			to_delete = to_replace;
+
+		// store last parent to have children
+		if (to_replace->left) {
+			parent_to_replace = to_replace;
+			assert(!queue_enqueue(queue, to_replace->left));
+		}
+
+		if (to_replace->right) {
+			parent_to_replace = to_replace;
+			assert(!queue_enqueue(queue, to_replace->right));
+		}
+	}
+
+	// error if node to be deleted was not found
+	if (!to_delete)
+		goto free_queue;
+
+	// node to be deleted found, critical error if replace node is NULL
+	assert(to_replace);
+
+	// node to replace has no parent, tree only has root node and try to remove
+	if (!parent_to_replace) {
+		assert(to_delete == root);
+		assert(to_replace == root);
+
+		//
+		binary_tree_node_destroy(root);
+		root = NULL;
+		goto free_queue;
+	}
+
+	// remove node (copy data and remove 'to_replace' node)
+	to_delete->data = to_replace->data;
+
+	//
+	if (parent_to_replace->left == to_replace)
+		parent_to_replace->left = NULL;
+	else
+		parent_to_replace->right = NULL;
+
+	//
+	binary_tree_node_destroy(to_replace);
+
+
+free_queue:
+	queue_destroy(queue);
+
+	return root;
 }
 
 
