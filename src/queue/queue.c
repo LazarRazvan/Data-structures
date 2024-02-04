@@ -63,7 +63,7 @@ void queue_destroy(queue_t *queue)
  * @queue	: Queue data structure
  * @_cb		: Print callback.
  */
-void queue_display(queue_t *queue, print_cb _cb)
+void queue_display(queue_t *queue, queue_print_cb _cb)
 {
 	void **it;
 

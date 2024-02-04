@@ -34,8 +34,8 @@ void queue_destroy(queue_t *);
  * Display.
  */
 // Print callback
-typedef void (*print_cb)(void *);
-void queue_display(queue_t *, print_cb);
+typedef void (*queue_print_cb)(void *);
+void queue_display(queue_t *, queue_print_cb);
 
 /**
  * Enqueue/Dequeue.
