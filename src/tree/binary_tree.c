@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "queue/queue.h"
+#include "stack/stack.h"
 #include "tree/binary_tree.h"
 
 /*****************************************************************************/
@@ -315,6 +316,77 @@ void binary_tree_level_order_print(binary_tree_node *node)
 
 	// destroy queue
 	queue_destroy(queue);
+}
+
+
+/**
+ * Print a binary tree in level-order spiral.
+ *
+ * @node: Binary tree node.
+ */
+void binary_tree_level_order_spiral_print(binary_tree_node *node)
+{
+	binary_tree_node *crt;
+	stack_t *s_ltr = NULL;	// left-to-right stack
+	stack_t *s_rtl = NULL;	// right-to-left stack
+	//
+	if (!node)
+		return;
+
+	// create queue for printing
+	s_ltr = stack_create();
+	s_rtl = stack_create();
+	assert(s_ltr || s_rtl);
+
+	// insert stack into right-to-left stack
+	assert(!stack_push(s_rtl, node));
+
+	//
+	while (!stack_is_empty(s_ltr) || !stack_is_empty(s_rtl)) {
+
+		// level print from right-to-left; while printing all nodes, insert
+		// children into left-to-right stack (since it is a stack, insert
+		// first the right children and than the left one; left most node will
+		// be the head of the stack)
+		while (!stack_is_empty(s_rtl)) {
+			crt = stack_pop(s_rtl);
+			assert(crt);
+
+			//
+			printf("%d ", crt->data);
+
+			//
+			if (crt->right)
+				assert(!stack_push(s_ltr, crt->right));
+
+			if (crt->left)
+				assert(!stack_push(s_ltr, crt->left));
+		}
+
+		// level print from left-to-right; while printing all nodes, insert
+		// children into right-to-left stack (since it is a stack, insert
+		// first the left children and than the right one; right most node will
+		// be the head of the stack)
+		while (!stack_is_empty(s_ltr)) {
+			crt = stack_pop(s_ltr);
+			assert(crt);
+
+			//
+			printf("%d ", crt->data);
+
+			//
+			if (crt->left)
+				assert(!stack_push(s_rtl, crt->left));
+
+			if (crt->right)
+				assert(!stack_push(s_rtl, crt->right));
+		}
+
+	}
+
+	// destroy stacks
+	stack_destroy(s_ltr);
+	stack_destroy(s_rtl);
 }
 
 

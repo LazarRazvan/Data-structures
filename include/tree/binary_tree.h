@@ -42,6 +42,7 @@ void binary_tree_in_order_print(binary_tree_node *root);
 void binary_tree_pre_order_print(binary_tree_node *root);
 void binary_tree_post_order_print(binary_tree_node *root);
 void binary_tree_level_order_print(binary_tree_node *node);
+void binary_tree_level_order_spiral_print(binary_tree_node *node);
 
 
 /*****************************************************************************/

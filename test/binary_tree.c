@@ -216,6 +216,13 @@ static void insert_test(void)
 	printf("\n");
 
 	/****************************************************************
+	 * Levelorder spiral print.
+	 ***************************************************************/
+	printf("Levelorder spiral:\n");
+	binary_tree_level_order_spiral_print(root);
+	printf("\n");
+
+	/****************************************************************
 	 * Recursive depth.
 	 ***************************************************************/
 	printf("Recursive depth: %d\n", binary_tree_depth_recursive(root));
