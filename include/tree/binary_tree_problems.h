@@ -26,5 +26,8 @@ bool binary_tree_cousins(binary_tree_node *root, int a, int b);
 //
 bool binary_tree_divide_two_halves(binary_tree_node *root);
 
+//
+bool binary_tree_is_perfect(binary_tree_node *root);
+
 
 #endif	// BINARY_TREE_PROBLEMS_H

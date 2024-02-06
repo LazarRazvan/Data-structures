@@ -200,6 +200,84 @@ tree_destroy:
 
 /*****************************************************************************/
 
+static void binary_tree_perfect_test(void)
+{
+	int rv = 0;
+	binary_tree_node *root = NULL;
+	binary_tree_node *node = NULL;
+
+	//
+	printf("\n\nRunning %s ...\n\n", __func__);
+
+	/****************************************************************
+	 * Create a binary tree
+	 *      26
+	 *    /   \
+	 *   10     3
+	 *  / \    /
+	 * 4   6  1
+	 ***************************************************************/
+	root = binary_tree_insert(NULL, 26);
+	if (!root) {
+		rv = -1; goto tree_destroy;
+	}
+
+	int keys[] = {10, 3, 4, 6, 1};
+	for (int i = 0; i < ARRAY_SIZE(keys); i++) {
+		node = binary_tree_insert(root, keys[i]);
+		if (!node) {
+			rv = -2; goto tree_destroy;
+		}
+	}
+
+	/****************************************************************
+	 * Levelorder print.
+	 ***************************************************************/
+	printf("Levelorder:\n");
+	binary_tree_level_order_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Perfect tree.
+	 ***************************************************************/
+	printf("Perfect tree: %s\n", binary_tree_is_perfect(root) ? "yes" : "no");
+
+	/****************************************************************
+	 * Updatebinary tree
+	 *      26
+	 *    /   \
+	 *   10     3
+	 *  / \    / \
+	 * 4   6  1   2
+	 ***************************************************************/
+	node = binary_tree_insert(root, 2);
+	if (!node) {
+		rv = -3; goto tree_destroy;
+	}
+
+	/****************************************************************
+	 * Levelorder print.
+	 ***************************************************************/
+	printf("Levelorder:\n");
+	binary_tree_level_order_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Perfect tree.
+	 ***************************************************************/
+	printf("Perfect tree: %s\n", binary_tree_is_perfect(root) ? "yes" : "no");
+
+tree_destroy:
+	binary_tree_node_destroy(root);
+
+	if (rv)
+		printf("[%s] Error: %d\n", __func__, rv);
+}
+
+
+/*****************************************************************************/
+
+
 int main()
 {
 	//
@@ -208,6 +286,8 @@ int main()
 	binary_tree_is_sum_tree_test();
 	//
 	binary_tree_cousins_test();
+	//
+	binary_tree_perfect_test();
 
 	return 0;
 }

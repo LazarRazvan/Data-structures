@@ -347,3 +347,46 @@ bool binary_tree_divide_two_halves(binary_tree_node *root)
 
 	return false;
 }
+
+
+/*****************************************************************************/
+
+static
+bool __binary_tree_is_perfect(binary_tree_node *root, int tree_depth,
+							int crt_depth)
+{
+
+	// validate leaf level
+	if (binary_tree_node_is_leaf(root))
+		return tree_depth == crt_depth;
+
+	// internal nodes must have two children
+	if (!root->left || !root->right)
+		return false;
+
+	return (__binary_tree_is_perfect(root->left, tree_depth, crt_depth + 1) &&
+			__binary_tree_is_perfect(root->right, tree_depth, crt_depth + 1));
+}
+
+
+/**
+ * Check if a binary tree is a perfect tree. A perfect tree is a tree where
+ * all internal nodes have two children and all leaves are on the same
+ * level.
+ *
+ * If h is the height (number of nodes from root to leaves) than the tree must
+ * have 2^h - 1 nodes.
+ *
+ * @root: Binary tree root.
+ *
+ * Return true if the binary tree is perfect and false otherwise.
+ */
+bool binary_tree_is_perfect(binary_tree_node *root)
+{
+
+	//
+	if (!root)
+		return false;
+
+	return __binary_tree_is_perfect(root, binary_tree_depth_iterative(root), 1);
+}
