@@ -62,6 +62,20 @@ void binary_tree_node_destroy(binary_tree_node *node)
 }
 
 
+/**
+ * Check if a binary tree node is leaf or not.
+ *
+ * @node: Node to be checked.
+ */
+bool binary_tree_node_is_leaf(binary_tree_node *node)
+{
+	if (!node)
+		return false;
+
+	return (!node->left && !node->right);
+}
+
+
 /*****************************************************************************/
 
 /**
@@ -390,6 +404,205 @@ void binary_tree_level_order_spiral_print(binary_tree_node *node)
 }
 
 
+/**
+ * Print a binary tree in level-order reverse.
+ *
+ * @node: Binary tree node.
+ */
+void binary_tree_level_order_reverse_print(binary_tree_node *node)
+{
+	binary_tree_node *crt;
+	stack_t *stack = NULL;
+	queue_t *queue = NULL;
+
+	//
+	if (!node)
+		return;
+
+	//
+	stack = stack_create();
+	queue = queue_create(128);
+	assert(stack || queue);
+
+	//
+	assert(!queue_enqueue(queue, node));
+
+	// level order traversal and push each node to stack
+	while (!queue_is_empty(queue)) {
+		crt = (binary_tree_node *)queue_dequeue(queue);
+		assert(crt);
+
+		//
+		assert(!stack_push(stack, crt));
+
+		//
+		if (crt->left)
+			assert(!queue_enqueue(queue, crt->left));
+
+		if (crt->right)
+			assert(!queue_enqueue(queue, crt->right));
+	}
+
+	// reverse print using stack
+	while (!stack_is_empty(stack)) {
+		crt = stack_pop(stack);
+		assert(crt);
+
+		//
+		printf("%d ", crt->data);
+	}
+
+	// destroy data structures
+	stack_destroy(stack);
+	queue_destroy(queue);
+}
+
+
+/**
+ * Print a binary tree in pre-order (root + left + right) without usign
+ * recursion and using an explicit stack.
+ *
+ * @node: Binary tree node.
+ */
+void binary_tree_pre_order_iterative_print(binary_tree_node *node)
+{
+	binary_tree_node *crt;
+	stack_t *stack = NULL;
+
+	//
+	if (!node)
+		return;
+
+	//
+	stack = stack_create();
+	assert(stack);
+
+	// add root to stack
+	assert(!stack_push(stack, node));
+
+	//
+	while (!stack_is_empty(stack)) {
+		crt = stack_pop(stack);
+		assert(crt);
+
+		//
+		printf("%d ", crt->data);
+
+		// push children to stack (first right than left)
+		if (crt->right)
+			assert(!stack_push(stack, crt->right));
+
+		if (crt->left)
+			assert(!stack_push(stack, crt->left));
+	}
+
+	// destroy data structures
+	stack_destroy(stack);
+}
+
+
+/**
+ * Print a binary tree in post-order (left + right + root) without usign
+ * recursion by using two stack data structures.
+ *
+ * The base idea is that the post-order can be seen as a reverse list for a
+ * custom pre-order traversal (root + right + left)
+ *
+ * @node: Binary tree node.
+ */
+void binary_tree_post_order_iterative_print(binary_tree_node *node)
+{
+	binary_tree_node *crt;
+	stack_t *stack1 = NULL;
+	stack_t *stack2 = NULL;
+
+	//
+	if (!node)
+		return;
+
+	//
+	stack1 = stack_create();
+	stack2 = stack_create();
+	assert(stack1 || stack2);
+
+	// add root to stack
+	assert(!stack_push(stack1, node));
+
+	// custom pre-order (root + right + left)
+	while (!stack_is_empty(stack1)) {
+		crt = stack_pop(stack1);
+		assert(crt);
+
+		//
+		assert(!stack_push(stack2, crt));
+
+		// push children to stack (first left than right)
+		if (crt->left)
+			assert(!stack_push(stack1, crt->left));
+
+		if (crt->right)
+			assert(!stack_push(stack1, crt->right));
+	}
+
+	// print post-order traversal (left + right + root)
+	while (!stack_is_empty(stack2)) {
+		crt = stack_pop(stack2);
+		assert(crt);
+
+		//
+		printf("%d ", crt->data);
+	}
+
+	// destroy data structures
+	stack_destroy(stack1);
+	stack_destroy(stack2);
+}
+
+
+/**
+ * Print a binary tree in diagonal (root and right children are always first
+ * than left children).
+ *
+ * @node: Binary tree node.
+ */
+void binary_tree_diagonal_print(binary_tree_node *node)
+{
+	queue_t *queue = NULL;
+
+	//
+	if (!node)
+		return;
+
+	//
+	queue = queue_create(128);
+	assert(queue);
+
+	// for a node print all right children path and store left children to
+	// queue
+	while (node) {
+		printf("%d ", node->data);
+
+		// if left children, store to queue
+		if (node->left)
+			assert(!queue_enqueue(queue, node->left));
+
+		// if right children, continue iteration and print
+		if (node->right) {
+			node = node->right;
+			continue;
+		}
+
+		// no right children, check nodes in queue
+		node = queue_dequeue(queue);
+		if (!node)
+			break;	// no more left children
+	}
+
+	// destroy data structures
+	queue_destroy(queue);
+}
+
+
 /*****************************************************************************/
 
 /**
@@ -466,3 +679,18 @@ success:
 	return depth;
 }
 
+
+/*****************************************************************************/
+
+/**
+ * Get size(number of nodes) of a binary tree.
+ *
+ * @node: Binary tree root.
+ */
+int binary_tree_size(binary_tree_node *node)
+{
+	if (!node)
+		return 0;
+
+	return (binary_tree_size(node->left) + binary_tree_size(node->right) + + 1);
+}

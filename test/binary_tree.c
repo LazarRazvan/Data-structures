@@ -8,6 +8,7 @@
 
 #include "tree/binary_tree.h"
 
+
 /*****************************************************************************/
 
 static void basic_test(void)
@@ -195,6 +196,13 @@ static void insert_test(void)
 	printf("\n");
 
 	/****************************************************************
+	 * Preorder iterative print.
+	 ***************************************************************/
+	printf("Preorder iterative :\n");
+	binary_tree_pre_order_iterative_print(root);
+	printf("\n");
+
+	/****************************************************************
 	 * Inorder print.
 	 ***************************************************************/
 	printf("Inorder:\n");
@@ -209,6 +217,13 @@ static void insert_test(void)
 	printf("\n");
 
 	/****************************************************************
+	 * Postorder iterative print.
+	 ***************************************************************/
+	printf("Postorder iterative:\n");
+	binary_tree_post_order_iterative_print(root);
+	printf("\n");
+
+	/****************************************************************
 	 * Levelorder print.
 	 ***************************************************************/
 	printf("Levelorder:\n");
@@ -220,6 +235,20 @@ static void insert_test(void)
 	 ***************************************************************/
 	printf("Levelorder spiral:\n");
 	binary_tree_level_order_spiral_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Levelorder reverse print.
+	 ***************************************************************/
+	printf("Levelorder reverse:\n");
+	binary_tree_level_order_reverse_print(root);
+	printf("\n");
+
+	/****************************************************************
+	 * Diagonal print.
+	 ***************************************************************/
+	printf("Diagonal:\n");
+	binary_tree_diagonal_print(root);
 	printf("\n");
 
 	/****************************************************************
