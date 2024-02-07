@@ -390,3 +390,72 @@ bool binary_tree_is_perfect(binary_tree_node *root)
 
 	return __binary_tree_is_perfect(root, binary_tree_depth_iterative(root), 1);
 }
+
+
+/*****************************************************************************/
+
+/**
+ * Check if two binary trees are duplicates (identical).
+ *
+ * @r1: First binary tree root.
+ * @r2: Second binary tree root.
+ *
+ * Return true if the two binary trees are duplicates and false otherwise.
+ */
+bool binary_tree_are_duplicate(binary_tree_node *r1, binary_tree_node *r2)
+{
+	//
+	if (!r1 && !r2)
+		return true;
+
+	if (!r1 || !r2)
+		return false;
+
+	return (r1->data == r2->data &&
+			binary_tree_are_duplicate(r1->left, r2->left) &&
+			binary_tree_are_duplicate(r1->right, r2->right));
+}
+
+
+/*****************************************************************************/
+
+/**
+ * Check if two binary trees are mirrored.
+ *
+ * @r1: First binary tree root.
+ * @r2: Second binary tree root.
+ *
+ * Return true if the two binary trees are mirror and false otherwise.
+ */
+bool binary_tree_are_mirror(binary_tree_node *r1, binary_tree_node *r2)
+{
+	//
+	if (!r1 && !r2)
+		return true;
+
+	if (!r1 || !r2)
+		return false;
+
+	return (r1->data == r2->data &&
+			binary_tree_are_mirror(r1->left, r2->right) &&
+			binary_tree_are_mirror(r1->right, r2->left));
+}
+
+
+/*****************************************************************************/
+
+/**
+ * Check if a binary tree is foldable (left and right subtrees are mirrored).
+ *
+ * @root: Binary tree root.
+ *
+ * Return true if the binary tree is foldable and false otherwise.
+ */
+bool binary_tree_is_foldable(binary_tree_node *root)
+{
+	//
+	if (!root)
+		return true;	// empty tree is considered foldable
+
+	return binary_tree_are_mirror(root->left, root->right);
+}
