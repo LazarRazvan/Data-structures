@@ -36,3 +36,6 @@ The repository is organized into two main directories: `include` and `src`. The 
   - Located in `include/binary_tree` and `src/binary_tree`.
   - Implements a binary tree data structure, fundamental for various algorithmic tasks and data organization. This structure provides efficient operations for searching, insertion, and traversal, making it suitable for applications such as sorting and representing hierarchical data.
 
+- **AVL Tree (`avl_tree`):**
+  - Located in `include/avl_tree` and `src/avl_tree`.
+  - The AVL tree is a self-balancing binary search tree where the heights of two child subtrees of any node differ by no more than one. Whenever the tree becomes unbalanced, as a result of standard BST operations such as insertions and deletions, AVL tree algorithms automatically perform rotations to restore its balance. This ensures that the tree maintains an O(log n) search time complexity, making it highly efficient for lookups, insertions, and deletions.
