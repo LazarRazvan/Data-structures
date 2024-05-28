@@ -317,6 +317,28 @@ static avl_tree_node *__avl_tree_delete(avl_tree_node *node, void *data,
 	return __avl_tree_balance(node);
 }
 
+static int __avl_tree_lookup(avl_tree_node *node, void *data, cmp_fn _cmp)
+{
+	int cmp_id;
+
+	if (!node)
+		return 0;
+
+	// node compare
+	cmp_id = _cmp(data, node->data);
+
+	// left lookup
+	if (cmp_id < 0)
+		return __avl_tree_lookup(node->left, data, _cmp);
+
+	// right lookup
+	if (cmp_id > 0)
+		return __avl_tree_lookup(node->right, data, _cmp);
+
+	// node found
+	return 1;
+}
+
 static void __avl_tree_destroy(avl_tree_node *node, free_fn _free)
 {
 	if (!node)
@@ -489,6 +511,19 @@ int avl_tree_delete(avl_tree_entry *entry, void *data)
 
 error:
 	return -1;
+}
+
+/**
+ * Lookup for an entry in an AVL tree. (O(log(n)))
+ */
+int avl_tree_lookup(avl_tree_entry *entry, void *data)
+{
+
+	if (!entry || !data || !entry->_cmp)
+		return 0;
+
+	//
+	return __avl_tree_lookup(entry->root, data, entry->_cmp);
 }
 
 

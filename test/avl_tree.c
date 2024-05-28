@@ -64,7 +64,6 @@ int main()
 		100, 105, 110, 115, 120, 125, 95, 90,
 		85, 80, 75, 70, 65, 60, 55
 	};
-
     int data_insert_size = sizeof(data_insert) / sizeof(data_insert[0]);
     int data_delete_size = sizeof(data_delete) / sizeof(data_delete[0]);
 
@@ -112,6 +111,15 @@ int main()
 
 	// print AVL level order
 	avl_tree_level_order_print(avl_tree);
+
+	// data lookup
+	for (int i = 0; i < data_insert_size; i++) {
+		if (avl_tree_lookup(avl_tree, &data_insert[i])) {
+			printf("Node [%d] found in AVL tree!\n", data_insert[i]);
+		} else {
+			printf("Node [%d] not found in AVL tree!\n", data_insert[i]);
+		}
+	}
 
 tree_destroy:
 	avl_tree_destroy(avl_tree);

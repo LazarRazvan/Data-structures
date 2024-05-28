@@ -55,6 +55,7 @@ void avl_tree_destroy(avl_tree_entry *entry);
 //
 int avl_tree_insert(avl_tree_entry *entry, void *data);
 int avl_tree_delete(avl_tree_entry *entry, void *data);
+int avl_tree_lookup(avl_tree_entry *entry, void *data);
 
 
 /*****************************************************************************/
