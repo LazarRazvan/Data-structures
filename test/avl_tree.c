@@ -53,14 +53,20 @@ void avl_tree_print(void *data)
 int main()
 {
 	avl_tree_entry *avl_tree;
-	int data[] = {
+	int data_insert[] = {
 		10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
 		110, 120, 5, 15, 25, 35, 45, 55, 65, 75,
 		85, 95, 105, 115, 125, 4, 6, 14, 16, 24,
 		26, 34, 36, 44, 46, 54, 56, 64, 66, 74,
 		76, 84, 86, 94, 96, 104, 106, 114, 116, 124
     };
-    int data_size = sizeof(data) / sizeof(data[0]);
+	int data_delete[] = {
+		100, 105, 110, 115, 120, 125, 95, 90,
+		85, 80, 75, 70, 65, 60, 55
+	};
+
+    int data_insert_size = sizeof(data_insert) / sizeof(data_insert[0]);
+    int data_delete_size = sizeof(data_delete) / sizeof(data_delete[0]);
 
 	// create AVL
 	avl_tree = avl_tree_create(avl_tree_alloc,
@@ -76,9 +82,9 @@ int main()
 	avl_tree_level_order_print(avl_tree);
 
 	// populate the AVL
-	for (int i = 0; i < data_size; i++) {
-		if (avl_tree_insert(avl_tree, &data[i])) {
-			fprintf(stderr, "Fail to add node %d [%d]!\n", i, data[i]);
+	for (int i = 0; i < data_insert_size; i++) {
+		if (avl_tree_insert(avl_tree, &data_insert[i])) {
+			fprintf(stderr, "Fail to add node %d [%d]!\n", i, data_insert[i]);
 			goto tree_destroy;
 		}
 	}
@@ -90,6 +96,22 @@ int main()
 	//80 40 100 20 60 90 110 10 30 50 70 85 95 105 120 5 15 25 35 45 55 65 75
 	//84 86 94 96 104 106 115 125 4 6 14 16 24 26 34 36 44 46 54 56 64 66 74 76
 	//114 116 124
+
+	// delete from AVL
+	for (int i = 0; i < data_delete_size; i++) {
+		printf("Delete node [%d]!\n", data_delete[i]);
+		if (avl_tree_delete(avl_tree, &data_delete[i])) {
+			fprintf(stderr, "Fail to del node %d [%d]!\n", i, data_delete[i]);
+			goto tree_destroy;
+		}
+	}
+
+	// Expected output
+	//84 40 104 20 64 94 114 10 30 50 74 86 96 106 124 5 15 25 35 45 56 66 76
+	//116 4 6 14 16 24 26 34 36 44 46 54
+
+	// print AVL level order
+	avl_tree_level_order_print(avl_tree);
 
 tree_destroy:
 	avl_tree_destroy(avl_tree);

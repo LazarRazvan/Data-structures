@@ -18,17 +18,107 @@
 
 /*****************************************************************************/
 
-static int __avl_tree_node_get_height(avl_tree_node *node)
+//
+// NODES
+//
+static int __avl_node_get_height(avl_tree_node *node)
 {
 	return node ? node->height : 0;
 }
 
-static int __avl_tree_node_get_balance(avl_tree_node *node)
+static int __avl_node_get_balance(avl_tree_node *node)
 {
-	return node ? __avl_tree_node_get_height(node->left) -
-								__avl_tree_node_get_height(node->right) : 0;
+	return node ? __avl_node_get_height(node->left) -
+								__avl_node_get_height(node->right) : 0;
 }
 
+static void __avl_node_update_height(avl_tree_node *node)
+{
+	node->height = 1 + MAX(__avl_node_get_height(node->left),
+							__avl_node_get_height(node->right));
+}
+
+static int __avl_node_is_leaf(avl_tree_node *node)
+{
+	return !(node->left || node->right);
+}
+
+static int __avl_node_has_one_child(avl_tree_node *node)
+{
+	return ((node->left && !node->right) || (!node->left && node->right));
+}
+
+avl_tree_node * __avl_node_get_min_node(avl_tree_node *node)
+{
+	while (node->left)
+		node = node->left;
+
+	return node;
+}
+
+static avl_tree_node *__avl_node_create(void *data, alloc_fn _alloc)
+{
+	avl_tree_node *node = NULL;
+
+	node = (avl_tree_node *)malloc(sizeof(avl_tree_node));
+	if (!node)
+		goto error;
+
+	node->data = _alloc(data);
+	if (!node->data)
+		goto node_free;
+
+	node->left = NULL;
+	node->right = NULL;
+	node->height = 1;
+
+// success
+	return node;
+
+node_free:
+	free(node);
+error:
+	return NULL;
+}
+
+static void __avl_node_destroy(avl_tree_node *node, free_fn _free)
+{
+	_free(node->data);
+	free(node);
+}
+
+static int __avl_node_copy_content(avl_tree_node *dst, avl_tree_node *src,
+									alloc_fn _alloc, free_fn _free)
+{
+	//
+	_free(dst->data);
+
+	//
+	*dst = *src;
+
+	//
+	dst->data = _alloc(src->data);
+	if (!dst->data)
+		return -1;
+
+	return 0;
+}
+
+static int __avl_node_copy_data(avl_tree_node *dst, avl_tree_node *src,
+								alloc_fn _alloc, free_fn _free)
+{
+	//
+	_free(dst->data);
+	dst->data = _alloc(src->data);
+	if (!dst->data)
+		return -1;
+
+	return 0;
+}
+
+//
+// TREE
+//
 static avl_tree_node* __avl_tree_left_rotate(avl_tree_node *x)
 {
 	/*
@@ -51,10 +141,8 @@ static avl_tree_node* __avl_tree_left_rotate(avl_tree_node *x)
 	x->right = yL;
 
 	// update height
-	x->height = 1 + MAX(__avl_tree_node_get_height(x->left),
-							__avl_tree_node_get_height(x->right));
-	y->height = 1 + MAX(__avl_tree_node_get_height(y->left),
-							__avl_tree_node_get_height(y->right));
+	__avl_node_update_height(x);
+	__avl_node_update_height(y);
 
 	return y;
 }
@@ -81,56 +169,88 @@ static avl_tree_node* __avl_tree_right_rotate(avl_tree_node *x)
 	x->left = yR;
 
 	// update height
-	x->height = 1 + MAX(__avl_tree_node_get_height(x->left),
-							__avl_tree_node_get_height(x->right));
-	y->height = 1 + MAX(__avl_tree_node_get_height(y->left),
-							__avl_tree_node_get_height(y->right));
+	__avl_node_update_height(x);
+	__avl_node_update_height(y);
 
 	return y;
 }
 
-static avl_tree_node *__avl_tree_node_create(void *data, alloc_fn alloc)
+static avl_tree_node *__avl_tree_balance(avl_tree_node *node)
 {
-	avl_tree_node *node = NULL;
+	int balance;
 
-	node = (avl_tree_node *)malloc(sizeof(avl_tree_node));
-	if (!node)
-		goto error;
+	// update node height
+	__avl_node_update_height(node);
 
-	node->data = alloc(data);
-	if (!node->data)
-		goto node_free;
+	// get balance factor
+	balance = __avl_node_get_balance(node);
 
-	node->left = NULL;
-	node->right = NULL;
-	node->height = 1;
+	// right height is heigher than left height
+	if (balance < -1) {
+		/**
+		 * Check if right rotation is required first.
+		 *
+		 * 10 (-2)                 10 (-2)
+		 *  \          right(30)       \
+		 *   30 (1)   ========>      20 (-1)
+		 *  /                            \
+		 * 20 (0)                      30 (0)
+		 */
+		if (__avl_node_get_balance(node->right) > 0)
+			node->right = __avl_tree_right_rotate(node->right);
 
-// success
+		/**
+		 * 10 (-2)                      20 (0)
+		 *  \           left(10)        /   \
+		 *   20 (-1)   ========>    10 (0) 30 (0)
+		 *    \
+		 *     30 (0)
+		 */
+		return __avl_tree_left_rotate(node);
+	}
+
+	// left height is heigher than right height
+	if (balance > 1) {
+		/**
+		 *    30 (2)                 30 (2)
+		 *      /     left(20)      /
+		 *   20 (-1) ========>  25 (1)
+		 *     \                  /
+		 *    25 (0)            20 (0)
+		 */
+		if (__avl_node_get_balance(node->left) < 0)
+			node->left = __avl_tree_left_rotate(node->left);
+
+		/**
+		 *    30 (2)                 20 (0)
+		 *      /     right(30)      /   \
+		 *   20 (1)   ========>  10 (0) 30 (0)
+		 *    /
+		 *  10 (0)
+		 */
+		return __avl_tree_right_rotate(node);
+	}
+
 	return node;
-
-node_free:
-	free(node);
-error:
-	return NULL;
 }
 
 static avl_tree_node *__avl_tree_insert(avl_tree_node *node, void *data,
-										alloc_fn alloc, cmp_fn cmp)
+										alloc_fn _alloc, cmp_fn _cmp)
 {
-	int cmp_id, node_balance;
+	int cmp_id;
 
 	if (!node)
-		return __avl_tree_node_create(data, alloc);
+		return __avl_node_create(data, _alloc);
 
 	// node insert 
-	cmp_id = cmp(data, node->data);
+	cmp_id = _cmp(data, node->data);
 	if (cmp_id < 0) {
-		node->left = __avl_tree_insert(node->left, data, alloc, cmp);
+		node->left = __avl_tree_insert(node->left, data, _alloc, _cmp);
 		if (!node->left)
 			return NULL;
 
 	} else if (cmp_id > 0) {
-		node->right = __avl_tree_insert(node->right, data, alloc, cmp);
+		node->right = __avl_tree_insert(node->right, data, _alloc, _cmp);
 		if (!node->right)
 			return NULL;
 
@@ -138,124 +258,108 @@ static avl_tree_node *__avl_tree_insert(avl_tree_node *node, void *data,
 		return node;	// prevent duplicates
 	}
 
-	// node height update
-	node->height = 1 + MAX(__avl_tree_node_get_height(node->left),
-							__avl_tree_node_get_height(node->right));
+	return __avl_tree_balance(node);
+}
 
-	// avl tree balance
-	node_balance = __avl_tree_node_get_balance(node);
+static avl_tree_node *__avl_tree_delete(avl_tree_node *node, void *data,
+										alloc_fn _alloc, free_fn _free,
+										cmp_fn _cmp)
+{
+	int cmp_id;
+	avl_tree_node *tmp;
 
-	// left or right-left rotation
-	if (node_balance < -1) {
-		/**
-		 * Insert: 30
-		 *
-		 * 10 (-2)                      20 (0)
-		 *  \           left(10)        /   \
-		 *   20 (-1)   ========>    10 (0) 30 (0)
-		 *    \
-		 *     30 (0)
-		 *
-		 * 30 > 20 (only left rotate(10))
-		 */
-		if (cmp(data, node->right->data) > 0)
-			return __avl_tree_left_rotate(node);
+	if (!node)
+		return NULL;
 
-		/**
-		 * Insert: 20
-		 * 10 (-2)                 10 (-2)                  20 (0)
-		 *  \          right(30)       \     left(10)       /   \
-		 *   30 (1)   ========>      20 (-1) =======>    10(0)  30(0)
-		 *  /                            \
-		 * 20 (0)                      30 (0)
-		 *
-		 * 20 < 30 (right rotate(30) + left rotate(10))
-		 */
-		if (cmp(data, node->right->data) < 0) {
-			node->right = __avl_tree_right_rotate(node->right);
-			return __avl_tree_left_rotate(node);
+	// node delete
+	cmp_id = _cmp(data, node->data);
+
+	// left lookup
+	if (cmp_id < 0)
+		node->left = __avl_tree_delete(node->left, data, _alloc, _free, _cmp);
+
+	// right lookup
+	if (cmp_id > 0)
+		node->right = __avl_tree_delete(node->right, data, _alloc, _free, _cmp);
+
+	// node deletion
+	if (cmp_id == 0) {
+		// leaf node
+		if (__avl_node_is_leaf(node)) {
+			__avl_node_destroy(node, _free);
+			return NULL;
+		}
+
+		if (__avl_node_has_one_child(node)) {
+			// one child node (replace content of node and child)
+			tmp = node->left ? node->left : node->right;
+
+			//
+			if (__avl_node_copy_content(node, tmp, _alloc, _free))
+				return NULL;
+
+			//
+			__avl_node_destroy(tmp, _free);
+		} else {
+			// node with two children (replace data with right subtree min)
+			tmp = __avl_node_get_min_node(node->right);
+
+			//
+			if (__avl_node_copy_data(node, tmp, _alloc, _free))
+				return NULL;
+
+			//
+			node->right = __avl_tree_delete(node->right, tmp->data, _alloc,
+											_free, _cmp);
 		}
 	}
 
-	// right or left-right rotation
-	if (node_balance > 1) {
-		/**
-		 * Insert: 10
-		 *
-		 *    30 (2)                 20 (0)
-		 *      /     right(30)      /   \
-		 *   20 (1)   ========>  10 (0) 30 (0)
-		 *    /
-		 *  10 (0)
-		 *
-		 * 10 < 20 (only right rotate(30))
-		 */
-		if (cmp(data, node->left->data) < 0)
-			return __avl_tree_right_rotate(node);
-
-		/**
-		 * Insert: 25
-		 *
-		 *    30 (2)                 30 (2)                   25(0)
-		 *      /     left(20)      /        right(30)        /  \
-		 *   20 (-1) ========>  25 (1)      ===========>  20 (0)  30 (0)
-		 *     \                  /
-		 *    25 (0)            20 (0)
-		 *
-		 * 25 > 20 (left rotate(20) + right rotate(30))
-		 */
-		if (cmp(data, node->left->data) > 0) {
-			node->left = __avl_tree_left_rotate(node->left);
-			return __avl_tree_right_rotate(node);
-		}
-	}
-
-	return node;
+	return __avl_tree_balance(node);
 }
 
-static void __avl_tree_destroy(avl_tree_node *node, free_fn free)
+static void __avl_tree_destroy(avl_tree_node *node, free_fn _free)
 {
 	if (!node)
 		return;
 
-	__avl_tree_destroy(node->left, free);
-	__avl_tree_destroy(node->right, free);
+	__avl_tree_destroy(node->left, _free);
+	__avl_tree_destroy(node->right, _free);
 
-	free(node->data);
-	free(node);
+	//
+	__avl_node_destroy(node, _free);
 }
 
-static void __avl_tree_in_order_print(avl_tree_node *node, print_fn print)
+static void __avl_tree_in_order_print(avl_tree_node *node, print_fn _print)
 {
 	if (!node)
 		return;
 
-	__avl_tree_in_order_print(node->left, print);
-	print(node->data);
-	__avl_tree_in_order_print(node->right, print);
+	__avl_tree_in_order_print(node->left, _print);
+	_print(node->data);
+	__avl_tree_in_order_print(node->right, _print);
 }
 
-static void __avl_tree_pre_order_print(avl_tree_node *node, print_fn print)
+static void __avl_tree_pre_order_print(avl_tree_node *node, print_fn _print)
 {
 	if (!node)
 		return;
 
-	print(node->data);
-	__avl_tree_in_order_print(node->left, print);
-	__avl_tree_in_order_print(node->right, print);
+	_print(node->data);
+	__avl_tree_in_order_print(node->left, _print);
+	__avl_tree_in_order_print(node->right, _print);
 }
 
-static void __avl_tree_post_order_print(avl_tree_node *node, print_fn print)
+static void __avl_tree_post_order_print(avl_tree_node *node, print_fn _print)
 {
 	if (!node)
 		return;
 
-	__avl_tree_in_order_print(node->left, print);
-	__avl_tree_in_order_print(node->right, print);
-	print(node->data);
+	__avl_tree_in_order_print(node->left, _print);
+	__avl_tree_in_order_print(node->right, _print);
+	_print(node->data);
 }
 
-static void __avl_tree_level_order_print(avl_tree_node *node, print_fn print)
+static void __avl_tree_level_order_print(avl_tree_node *node, print_fn _print)
 {
 	avl_tree_node *crt;
 	queue_t *queue = NULL;
@@ -278,7 +382,7 @@ static void __avl_tree_level_order_print(avl_tree_node *node, print_fn print)
 		assert(crt);
 
 		// print element in queue
-		print(crt->data);
+		_print(crt->data);
 
 		// add element leaves in queue
 		if (crt->left)
@@ -298,15 +402,15 @@ static void __avl_tree_level_order_print(avl_tree_node *node, print_fn print)
 /**
  * Create an AVL tree entry.
  *
- * @alloc	: Function to create node inforation.
- * @free	: Function to free node inforation.
- * @cmp		: Function to compare to node information.
- * @print	: Function to print node information.
+ * @_alloc	: Function to create node inforation.
+ * @_free	: Function to free node inforation.
+ * @_cmp	: Function to compare to node information.
+ * @_print	: Function to print node information.
  *
  * Return new allocated entry on success and false otherwise.
  */
-avl_tree_entry *avl_tree_create(alloc_fn alloc, free_fn free, cmp_fn cmp,
-								print_fn print)
+avl_tree_entry *avl_tree_create(alloc_fn _alloc, free_fn _free, cmp_fn _cmp,
+								print_fn _print)
 {
 	avl_tree_entry *entry = NULL;
 
@@ -317,10 +421,10 @@ avl_tree_entry *avl_tree_create(alloc_fn alloc, free_fn free, cmp_fn cmp,
 
 	// initialize entry
 	entry->root		= NULL;
-	entry->alloc	= alloc;
-	entry->free		= free;
-	entry->cmp		= cmp;
-	entry->print	= print;
+	entry->_alloc	= _alloc;
+	entry->_free	= _free;
+	entry->_cmp		= _cmp;
+	entry->_print	= _print;
 
 	return entry;
 }
@@ -330,10 +434,10 @@ avl_tree_entry *avl_tree_create(alloc_fn alloc, free_fn free, cmp_fn cmp,
  */
 void avl_tree_destroy(avl_tree_entry *entry)
 {
-	if (!entry || !entry->free)
+	if (!entry || !entry->_free)
 		return;
 
-	__avl_tree_destroy(entry->root, entry->free);
+	__avl_tree_destroy(entry->root, entry->_free);
 	free(entry);
 }
 
@@ -347,11 +451,35 @@ int avl_tree_insert(avl_tree_entry *entry, void *data)
 {
 	avl_tree_node *node;
 
-	if (!entry || !data || !entry->alloc || !entry->cmp)
+	if (!entry || !data || !entry->_alloc || !entry->_cmp)
 		goto error;
 
 	//
-	node = __avl_tree_insert(entry->root, data, entry->alloc, entry->cmp);
+	node = __avl_tree_insert(entry->root, data, entry->_alloc, entry->_cmp);
+	if (!node)
+		goto error;	// do not alter the root
+
+// success
+	entry->root = node;
+	return 0;
+
+error:
+	return -1;
+}
+
+/**
+ * Delete an entry from AVL tree. (O(log(n)))
+ */
+int avl_tree_delete(avl_tree_entry *entry, void *data)
+{
+	avl_tree_node *node;
+
+	if (!entry || !data || !entry->_alloc || !entry->_free || !entry->_cmp)
+		goto error;
+
+	//
+	node = __avl_tree_delete(entry->root, data, entry->_alloc, entry->_free,
+							entry->_cmp);
 	if (!node)
 		goto error;	// do not alter the root
 
@@ -371,7 +499,7 @@ error:
  */
 void avl_tree_in_order_print(avl_tree_entry *entry)
 {
-	if (!entry || !entry->print)
+	if (!entry || !entry->_print)
 		return;
 
 	if (!entry->root) {
@@ -379,7 +507,7 @@ void avl_tree_in_order_print(avl_tree_entry *entry)
 		return;
 	}
 
-	__avl_tree_in_order_print(entry->root, entry->print);
+	__avl_tree_in_order_print(entry->root, entry->_print);
 }
 
 /**
@@ -387,7 +515,7 @@ void avl_tree_in_order_print(avl_tree_entry *entry)
  */
 void avl_tree_pre_order_print(avl_tree_entry *entry)
 {
-	if (!entry || !entry->print)
+	if (!entry || !entry->_print)
 		return;
 
 	if (!entry->root) {
@@ -395,7 +523,7 @@ void avl_tree_pre_order_print(avl_tree_entry *entry)
 		return;
 	}
 
-	__avl_tree_pre_order_print(entry->root, entry->print);
+	__avl_tree_pre_order_print(entry->root, entry->_print);
 }
 
 /**
@@ -403,7 +531,7 @@ void avl_tree_pre_order_print(avl_tree_entry *entry)
  */
 void avl_tree_post_order_print(avl_tree_entry *entry)
 {
-	if (!entry || !entry->print)
+	if (!entry || !entry->_print)
 		return;
 
 	if (!entry->root) {
@@ -411,12 +539,12 @@ void avl_tree_post_order_print(avl_tree_entry *entry)
 		return;
 	}
 
-	__avl_tree_post_order_print(entry->root, entry->print);
+	__avl_tree_post_order_print(entry->root, entry->_print);
 }
 
 void avl_tree_level_order_print(avl_tree_entry *entry)
 {
-	if (!entry || !entry->print)
+	if (!entry || !entry->_print)
 		return;
 
 	if (!entry->root) {
@@ -424,5 +552,5 @@ void avl_tree_level_order_print(avl_tree_entry *entry)
 		return;
 	}
 
-	__avl_tree_level_order_print(entry->root, entry->print);
+	__avl_tree_level_order_print(entry->root, entry->_print);
 }
