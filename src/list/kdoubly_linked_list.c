@@ -150,6 +150,29 @@ void kdlist_push_head(kdlist_head_t *head, kdlist_node_t *node)
 }
 
 /**
+ * Add a node to the tail of the list.
+ *
+ * @head: Generic doubly linked list head.
+ * @node: Doubly linked list node.
+ */
+void kdlist_push_tail(kdlist_head_t *head, kdlist_node_t *node)
+{
+	if (kdlist_is_empty(head)) {
+		head->next = node;
+		head->prev = node;
+		node->next = head;
+		node->prev = head;
+
+		return;
+	}
+
+	node->prev = head->prev;
+	head->prev->next = node;
+	head->prev = node;
+	node->next = head;
+}
+
+/**
  * Add node after a give node.
  *
  * @base: Base list node.
