@@ -44,3 +44,6 @@ The repository is organized into two main directories: `include` and `src`. The 
   - Located in `include/htable` and `src/htable`.
   - The hash table implementation provides a generic, efficient, and flexible data structure for storing key-value pairs. It supports user-defined key comparison and hashing functions, along with customizable memory allocation and deallocation callbacks for both keys and values. Collision resolution is handled using separate chaining via doubly linked lists, ensuring efficient insertions, deletions, and lookups even in the presence of hash collisions.
 
+- **Ring Buffer (`ring_buffer`):**
+  - Located in `include/ring_buffer` and `src/ring_buffer`.
+  - The ring buffer (circular buffer) is a fixed-size data structure that allows for efficient, FIFO (First-In-First-Out) data handling. This implementation is designed for use in scenarios where continuous data streams are stored and processed. It provides functions for adding (pushing) and removing (popping) elements, along with utility functions to check if the buffer is full or empty. Note that this implementation is concurrency-unsafe, meaning it is not designed for concurrent access in multithreaded environments.
