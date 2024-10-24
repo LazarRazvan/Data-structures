@@ -39,3 +39,8 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **AVL Tree (`avl_tree`):**
   - Located in `include/avl_tree` and `src/avl_tree`.
   - The AVL tree is a self-balancing binary search tree where the heights of two child subtrees of any node differ by no more than one. Whenever the tree becomes unbalanced, as a result of standard BST operations such as insertions and deletions, AVL tree algorithms automatically perform rotations to restore its balance. This ensures that the tree maintains an O(log n) search time complexity, making it highly efficient for lookups, insertions, and deletions.
+
+- **Hash Table (`htable`):**
+  - Located in `include/htable` and `src/htable`.
+  - The hash table implementation provides a generic, efficient, and flexible data structure for storing key-value pairs. It supports user-defined key comparison and hashing functions, along with customizable memory allocation and deallocation callbacks for both keys and values. Collision resolution is handled using separate chaining via doubly linked lists, ensuring efficient insertions, deletions, and lookups even in the presence of hash collisions.
+
