@@ -185,3 +185,14 @@ void kdlist_push_after(kdlist_node_t *base, kdlist_node_t *node)
 	node->next = base->next;
 	base->next = node;
 }
+
+/**
+ * Delete a node from list.
+ *
+ * @node: Node to be removed.
+ */
+void kdlist_delete(kdlist_node_t *node)
+{
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+}

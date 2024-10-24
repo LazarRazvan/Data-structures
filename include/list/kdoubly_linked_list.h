@@ -90,4 +90,7 @@ void kdlist_push_head(kdlist_head_t *head, kdlist_node_t *node);
 void kdlist_push_tail(kdlist_head_t *head, kdlist_node_t *node);
 void kdlist_push_after(kdlist_node_t *base, kdlist_node_t *node);
 
+//
+void kdlist_delete(kdlist_node_t *node);
+
 #endif	// KDOUBLY_LINKED_LIST_H

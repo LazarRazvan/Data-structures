@@ -47,3 +47,7 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **Ring Buffer (`ring_buffer`):**
   - Located in `include/ring_buffer` and `src/ring_buffer`.
   - The ring buffer (circular buffer) is a fixed-size data structure that allows for efficient, FIFO (First-In-First-Out) data handling. This implementation is designed for use in scenarios where continuous data streams are stored and processed. It provides functions for adding (pushing) and removing (popping) elements, along with utility functions to check if the buffer is full or empty. Note that this implementation is concurrency-unsafe, meaning it is not designed for concurrent access in multithreaded environments.
+
+- **Buddy Allocator(`buddy`):**
+  - Located in `include/allocator` and `src/allocator`.
+  - The buddy allocator is a memory management system that splits and merges memory blocks into powers of two for efficient allocation and deallocation. It minimizes fragmentation and provides fast, dynamic memory management functions. This implementation uses a bitfield-based approach to track allocation states and supports utility functions to calculate buddy addresses and manage memory pools. Note that this implementation is concurrency-unsafe and not designed for multithreaded environments.
