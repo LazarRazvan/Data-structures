@@ -51,3 +51,7 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **Buddy Allocator(`buddy`):**
   - Located in `include/allocator` and `src/allocator`.
   - The buddy allocator is a memory management system that splits and merges memory blocks into powers of two for efficient allocation and deallocation. It minimizes fragmentation and provides fast, dynamic memory management functions. This implementation uses a bitfield-based approach to track allocation states and supports utility functions to calculate buddy addresses and manage memory pools. Note that this implementation is concurrency-unsafe and not designed for multithreaded environments.
+
+- **Radix Tree(`radix_tree`):**
+  - Located in `include/tree` and `src/tree`.
+  - The Radix Tree is a trie-based data structure optimized for string keys by splitting keys at byte boundaries. This implementation uses a byte-based radix (256 children per node) and supports efficient key insertion, lookup, and deletion. It includes utility functions for prefix management, node creation, splitting, merging, and cleanup. The structure is flexible with custom allocation, print, and deallocation functions. Note that this implementation is concurrency-unsafe and not designed for multithreaded environments.
