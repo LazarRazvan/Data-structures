@@ -55,3 +55,7 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **Radix Tree(`radix_tree`):**
   - Located in `include/tree` and `src/tree`.
   - The Radix Tree is a trie-based data structure optimized for string keys by splitting keys at byte boundaries. This implementation uses a byte-based radix (256 children per node) and supports efficient key insertion, lookup, and deletion. It includes utility functions for prefix management, node creation, splitting, merging, and cleanup. The structure is flexible with custom allocation, print, and deallocation functions. Note that this implementation is concurrency-unsafe and not designed for multithreaded environments.
+
+- **Min(Max) Heap(`min_heap/max_heap`):**
+  - Located in `include/heap` and `src/heap`.
+  - This is a generic C implementation of binary Min and Max Heaps, providing efficient priority queue functionality. Both variants support dynamic memory allocation, allowing insertion, deletion (pop), and peek operations with logarithmic complexity. The implementation is flexible and modular, utilizing function pointers for custom comparison logic, making it suitable for various data types. The codebase includes type-safe headers for Min and Max variants (`min_heap.h`, `max_heap.h`) and core functionality (`max_heap.c`). This implementation is designed for single-threaded use and does not include built-in concurrency protection.
