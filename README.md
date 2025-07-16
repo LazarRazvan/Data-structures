@@ -59,3 +59,17 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **Min(Max) Heap(`min_heap/max_heap`):**
   - Located in `include/heap` and `src/heap`.
   - This is a generic C implementation of binary Min and Max Heaps, providing efficient priority queue functionality. Both variants support dynamic memory allocation, allowing insertion, deletion (pop), and peek operations with logarithmic complexity. The implementation is flexible and modular, utilizing function pointers for custom comparison logic, making it suitable for various data types. The codebase includes type-safe headers for Min and Max variants (`min_heap.h`, `max_heap.h`) and core functionality (`max_heap.c`). This implementation is designed for single-threaded use and does not include built-in concurrency protection.
+
+- **Slab allocator(`slab`):**
+  - Located in `include/allocator` and `src/allocator`.
+  - This is a high-performance, fixed-size object allocator implemented in C, designed to minimize fragmentation and deliver fast memory allocation.
+  - The allocator manages memory in page-sized slabs (typically 4096 bytes), each containing:
+    - A bitmap to track allocation status
+    - Internal metadata
+    - A memory region of contiguously aligned objects
+  - Key features:
+    - Fast allocation and deallocation using efficient bitmap scanning
+    - Customizable object alignment via *SLAB_OBJ_ALIGNMENT* (default: 64 bytes) to optimize CPU cache performance
+    - Objects are aligned to cache-line boundaries to reduce false sharing and maximize throughput
+    - Optional red zone support (enabled via the *RED_ZONE* macro)
+    - Designed for single-threaded or per-CPU usage, this allocator does not include locking or thread safety mechanisms by default, making it suitable for embedded, real-time, or high-performance use cases.
