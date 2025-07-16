@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include "utils.h"
 #include "list/kdoubly_linked_list.h"
 
 
@@ -38,12 +39,6 @@
 /*****************************************************************************/
 
 //
-// Page size
-//
-#define _1KiB				(1024)
-#define PAGE_SIZE			(4 * _1KiB)
-
-//
 // Buddy (32 pages in total + xtra to ensure alignemnt)
 //
 #define BUDDY_ORDERS		5
@@ -57,13 +52,6 @@
 
 
 /*****************************************************************************/
-
-//
-// Alignment
-//
-#define ALIGN(x,a)			(((x) + (a) - 1) & ~((a) - 1))
-#define PAGE_ALIGN(x)		ALIGN((x), PAGE_SIZE)
-#define PAGE_PTR_ALIGN(x)	((void *)ALIGN((uintptr_t)(x), (uintptr_t)(PAGE_SIZE)))
 
 //
 // Convert memory size to order
