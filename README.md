@@ -73,3 +73,7 @@ The repository is organized into two main directories: `include` and `src`. The 
     - Objects are aligned to cache-line boundaries to reduce false sharing and maximize throughput
     - Optional red zone support (enabled via the *RED_ZONE* macro)
     - Designed for single-threaded or per-CPU usage, this allocator does not include locking or thread safety mechanisms by default, making it suitable for embedded, real-time, or high-performance use cases.
+
+- **RCU(`rcu`):**
+  - Located in `include/rcu` and `src/rcu`.
+  - This is a lightweight, reusable userspace implementation of RCU (Read-Copy-Update), a synchronization mechanism that allows multiple readers to access shared data concurrently without locking, while safely deferring updates or deallocations by writers.
