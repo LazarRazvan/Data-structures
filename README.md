@@ -77,3 +77,11 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **RCU(`rcu`):**
   - Located in `include/rcu` and `src/rcu`.
   - This is a lightweight, reusable userspace implementation of RCU (Read-Copy-Update), a synchronization mechanism that allows multiple readers to access shared data concurrently without locking, while safely deferring updates or deallocations by writers.
+
+- **Barrier(`barrier`):**
+  - Located in `include/synchronization` and `src/syncronization`.
+  - This is a lightweight, reusable thread barrier implementation using atomic operations. A barrier is a synchronization primitive that blocks participating threads until all have reached the barrier point, at which time they are all released to continue.
+
+- **Read-Write lock(`rwlock`):**
+  - Located in `include/synchronization` and `src/syncronization`.
+  - This lightweight read-write lock allows multiple readers to hold the lock concurrently, while writers are granted exclusive access. It is implemented using two atomic integers.
