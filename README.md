@@ -85,3 +85,8 @@ The repository is organized into two main directories: `include` and `src`. The 
 - **Read-Write lock(`rwlock`):**
   - Located in `include/synchronization` and `src/syncronization`.
   - This lightweight read-write lock allows multiple readers to hold the lock concurrently, while writers are granted exclusive access. It is implemented using two atomic integers.
+
+- **MPMC Ring Buffer(`mpmc_rbuffer`):**
+  - Located in `include/ring_buffer` and `src/ring_buffer`.
+  - The MPMC ring buffer is a fixed-size, lock-free, multi-producer/multi-consumer queue built on top of a circular buffer. It is designed for concurrent use in multithreaded environments where multiple threads may enqueue and dequeue elements at the same time. It uses C11 atomics.
+  - The buffer size is normalized to the next power of two, which allows efficient index wrap-around using bitwise masking instead of modulo operations.
